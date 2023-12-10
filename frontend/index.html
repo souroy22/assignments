@@ -3,11 +3,99 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <title>ChatBot</title>
   </head>
   <body>
-    Hiii
+    <div id="snackbar"></div>
+    <div id="navbar">
+      <button
+        id="navbar-logout-btn"
+        onclick="handleNavbarButtonClick('logout')"
+      >
+        Logout
+      </button>
+      <button
+        id="navbar-signup-btn"
+        onclick="handleNavbarButtonClick('signup')"
+      >
+        Signup
+      </button>
+      <button id="navbar-login-btn" onclick="handleNavbarButtonClick('login')">
+        Login
+      </button>
+    </div>
+    <!-- Login Page -->
+    <div id="login-page" class="auth-form-container">
+      <div class="form-container">
+        <h1>Login Page</h1>
+        <input placeholder="Enter email id" id="login-email" />
+        <input placeholder="Enter password" id="login-password" />
+        <button id="login-btn" class="login-signup-btn" onclick="handleLogin()">
+          Login
+        </button>
+      </div>
+    </div>
+
+    <!-- Signup Page -->
+    <div id="signup-page" class="auth-form-container">
+      <div class="form-container">
+        <h1>Signup Page</h1>
+        <input placeholder="Enter full name" id="signup-name" />
+        <input placeholder="Enter email id" id="signup-email" />
+        <input placeholder="Enter password" id="signup-password" />
+        <button
+          id="signup-btn"
+          class="login-signup-btn"
+          onclick="handleSignup()"
+        >
+          Signup
+        </button>
+      </div>
+    </div>
+
+    <!-- Chat Page -->
+    <div id="chat-page">
+      <div id="chat-container">
+        <div id="chat-top">
+          <img
+            id="top-bar-bot-image"
+            src="./assets/images/AI-robot-chat-1.jpg"
+          />
+          <h1>Chat with AI Assistent</h1>
+        </div>
+        <div id="chat-mid">
+          <div class="bot-msg-container">
+            <span class="bot-msg">This is a bot message</span>
+          </div>
+          <div class="client-msg-container">
+            <span class="client-msg">This is a my message</span>
+          </div>
+        </div>
+        <div id="chat-bottom">
+          <input
+            id="chat-input"
+            type="text"
+            name="chat-input"
+            value=""
+            placeholder="type here.."
+            onkeyup="handleChatMsgChange()"
+          />
+          <span
+            id="msg-send-btn"
+            class="material-symbols-outlined"
+            onclick="handleSubmit()"
+            >Send
+          </span>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
