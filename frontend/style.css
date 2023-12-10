@@ -91,6 +91,17 @@ button {
   outline: none;
 }
 
+#no-chat {
+  display: none;
+}
+
+#user-name {
+  display: none;
+  color: white;
+  font-size: 20px;
+  margin-right: 20px;
+}
+
 .login-signup-btn {
   background-color: #090979;
   color: white;

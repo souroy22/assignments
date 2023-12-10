@@ -20,15 +20,15 @@ const loginBtn = document.getElementById("login-btn");
 const signupBtn = document.getElementById("signup-btn");
 const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("msg-send-btn");
+const noChat = document.getElementById("no-chat");
+const userName = document.getElementById("user-name");
 
 // call on first time load
 onLoad();
 
 async function onLoad() {
-  let token = localStorage.getItem("token");
-  let userid = JSON.parse(localStorage.getItem("user")).id;
-  const chats = await axios.get(`${BASE_URL}/chats/get-old-chats/${userid}`);
-  console.log("Chats", chats);
+  let token = await localStorage.getItem("token");
+  await loadOldChats();
   if (token) {
     loginPage.style.display = "none";
     signupPage.style.display = "none";
@@ -36,6 +36,9 @@ async function onLoad() {
     navbarLogoutBtn.style.display = "block";
     navbarLoginBtn.style.display = "none";
     navbarSignupBtn.style.display = "none";
+    const userData = JSON.parse(localStorage.getItem("user")).name;
+    userName.innerText = `Hi, ${userData}`;
+    userName.style.display = "inline-block";
   } else {
     loginPage.style.display = "block";
     signupPage.style.display = "none";
@@ -43,18 +46,37 @@ async function onLoad() {
     navbarLogoutBtn.style.display = "none";
     navbarLoginBtn.style.display = "block";
     navbarSignupBtn.style.display = "block";
+    userName.style.display = "none";
   }
 }
 
-const handleNavbarButtonClick = (buttonName) => {
+async function loadOldChats() {
+  let userid = JSON.parse(localStorage.getItem("user")).id;
+  const chats = await axios.get(`${BASE_URL}/chats/get-old-chats/${userid}`);
+  if (!chats.data.chats.length) {
+    noChat.style.display = "flex";
+  } else {
+    noChat.style.display = "none";
+    for (let chat of chats.data.chats) {
+      console.log("Chat", chat);
+      const msgType = chat.userType === "user" ? "CLIENT" : "BOT";
+      addNewChat(msgType, chat.text);
+    }
+  }
+}
+
+const handleNavbarButtonClick = async (buttonName) => {
   if (buttonName === "logout") {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    chatContainer.innerHTML = "";
     loginPage.style.display = "block";
     signupPage.style.display = "none";
     chatPage.style.display = "none";
     navbarLogoutBtn.style.display = "none";
     navbarLoginBtn.style.display = "block";
     navbarSignupBtn.style.display = "block";
+    userName.style.display = "none";
   } else if (buttonName === "signup") {
     signupPage.style.display = "block";
     loginPage.style.display = "none";
@@ -102,6 +124,8 @@ loginBtn.addEventListener("click", async () => {
   };
   try {
     const res = await axios.post(`${BASE_URL}/auth/login`, data);
+    userName.innerText = `Hi, ${res.data.user.name}`;
+    userName.style.display = "inline-block";
     storeDataToLocalStorage("token", res.data.token);
     storeDataToLocalStorage("user", JSON.stringify(res.data.user));
     loginPage.style.display = "none";
@@ -110,6 +134,7 @@ loginBtn.addEventListener("click", async () => {
     navbarLogoutBtn.style.display = "block";
     navbarLoginBtn.style.display = "none";
     navbarSignupBtn.style.display = "none";
+    await loadOldChats();
     showNotification(3000, "successfully loggedin", "SUCCESS");
   } catch (error) {
     showNotification(3000, error.message, "DANGER");
@@ -133,6 +158,8 @@ signupBtn.addEventListener("click", async () => {
   };
   try {
     const res = await axios.post(`${BASE_URL}/auth/signup`, data);
+    userName.innerText = `Hi, ${res.data.user.name}`;
+    userName.style.display = "inline-block";
     storeDataToLocalStorage("token", res.data.token);
     storeDataToLocalStorage("user", JSON.stringify(res.data.user));
     console.log("RESPONSE", res.data);
@@ -142,6 +169,7 @@ signupBtn.addEventListener("click", async () => {
     navbarLogoutBtn.style.display = "block";
     navbarLoginBtn.style.display = "none";
     navbarSignupBtn.style.display = "none";
+    await loadOldChats();
     showNotification(3000, "successfully signed up", "SUCCESS");
   } catch (error) {
     showNotification(3000, "Please fill all the fields", "DANGER");
@@ -174,7 +202,7 @@ const handleMsgSubmit = async () => {
 
   data = JSON.parse(data);
   const id = data.id;
-  console.log("Id", id);
+  noChat.style.display = "none";
   socket.emit("new-message", {
     message: value,
     userId: id,

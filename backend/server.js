@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
   socket.on("new-message", async ({ message, userId }) => {
     // console.log("New Message", message);
     // console.log("ID", socket.id);
-    console.log("Message", message);
+    // console.log("Message", message);
     const user = await User.findById(userId);
     let chats = user.chats;
     let newChat = new Chat({
@@ -81,7 +81,7 @@ io.on("connection", (socket) => {
       userType: "user",
     });
     newChat = await newChat.save();
-    console.log("Id ---->", newChat._id);
+    // console.log("Id ---->", newChat._id);
     chats.push(newChat._id);
     const botReply = await getMesssage(message);
     let newBotChat = new Chat({
@@ -91,7 +91,7 @@ io.on("connection", (socket) => {
     newBotChat = await newBotChat.save();
     chats.push(newBotChat._id);
     await User.findByIdAndUpdate(userId, { chats });
-    console.log("botReply", botReply.message.content);
+    // console.log("botReply", botReply.message.content);
     socket.emit("bot-reply", `${botReply.message.content}`);
   });
 });
