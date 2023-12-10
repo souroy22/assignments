@@ -22,7 +22,7 @@ const server = app.listen(PORT, (error) => {
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://127.0.0.1:5500",
+    origin: "http://localhost:8080",
   },
 });
 
@@ -35,5 +35,7 @@ connectMongoose();
 app.use("/api/v1", mainRouter);
 
 io.on("connection", (socket) => {
-  console.log("New Message");
+  socket.on("new-message", (message) => {
+    console.log("New Message", message);
+  });
 });

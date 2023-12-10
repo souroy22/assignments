@@ -36,9 +36,7 @@
         <h1>Login Page</h1>
         <input placeholder="Enter email id" id="login-email" />
         <input placeholder="Enter password" id="login-password" />
-        <button id="login-btn" class="login-signup-btn" onclick="handleLogin()">
-          Login
-        </button>
+        <button id="login-btn" class="login-signup-btn">Login</button>
       </div>
     </div>
 
@@ -49,13 +47,7 @@
         <input placeholder="Enter full name" id="signup-name" />
         <input placeholder="Enter email id" id="signup-email" />
         <input placeholder="Enter password" id="signup-password" />
-        <button
-          id="signup-btn"
-          class="login-signup-btn"
-          onclick="handleSignup()"
-        >
-          Signup
-        </button>
+        <button id="signup-btn" class="login-signup-btn">Signup</button>
       </div>
     </div>
 
@@ -84,18 +76,11 @@
             name="chat-input"
             value=""
             placeholder="type here.."
-            onkeyup="handleChatMsgChange()"
           />
-          <span
-            id="msg-send-btn"
-            class="material-symbols-outlined"
-            onclick="handleSubmit()"
-            >Send
-          </span>
+          <span id="msg-send-btn" class="material-symbols-outlined">Send </span>
         </div>
       </div>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>
