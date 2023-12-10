@@ -24,8 +24,11 @@ const sendBtn = document.getElementById("msg-send-btn");
 // call on first time load
 onLoad();
 
-function onLoad() {
+async function onLoad() {
   let token = localStorage.getItem("token");
+  let userid = JSON.parse(localStorage.getItem("user")).id;
+  const chats = await axios.get(`${BASE_URL}/chats/get-old-chats/${userid}`);
+  console.log("Chats", chats);
   if (token) {
     loginPage.style.display = "none";
     signupPage.style.display = "none";
@@ -146,7 +149,7 @@ signupBtn.addEventListener("click", async () => {
   }
 });
 
-const addNewChat = (msgType = "CLIENT", msg) => {
+function addNewChat(msgType = "CLIENT", msg) {
   let newContent = document.createElement("div");
   newContent.className =
     msgType === "CLIENT" ? "client-msg-container" : "bot-msg-container";
@@ -155,9 +158,9 @@ const addNewChat = (msgType = "CLIENT", msg) => {
   }">${msg}</p>`;
   chatContainer.appendChild(newContent);
   chatContainer.scroll(0, chatContainer.scrollHeight);
-};
+}
 
-const handleMsgSubmit = () => {
+const handleMsgSubmit = async () => {
   let value = chatInput.value;
   if (!value?.trim()) {
     showNotification(3000, "Please fill all the fields", "DANGER");
@@ -167,8 +170,14 @@ const handleMsgSubmit = () => {
   chatInput.value = "";
   sendBtn.style.color = "gray";
   sendBtn.style.cursor = "not-allowed";
+  let data = localStorage.getItem("user");
+
+  data = JSON.parse(data);
+  const id = data.id;
+  console.log("Id", id);
   socket.emit("new-message", {
     message: value,
+    userId: id,
   });
 };
 

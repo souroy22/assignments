@@ -9,7 +9,7 @@ const chatSchema = new mongoose.Schema(
     userType: {
       type: String,
       required: true,
-      enum: ["HUMAN", "AI"],
+      enum: ["user", "system"],
     },
   },
   { timestamps: true }

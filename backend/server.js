@@ -8,6 +8,8 @@ const cors = require("cors");
 const mainRouter = require("./routers");
 const connectMongoose = require("./db/mongodbConnection");
 const path = require("path");
+const User = require("./models/userModel");
+const Chat = require("./models/chatModel");
 
 const PORT = process.env.PORT || 5000;
 const openai = new OpenAI({ apiKey: process.env.OPEN_AI_KEY });
@@ -48,6 +50,7 @@ app.use(
     origin: function (origin, callback) {
       // allow requests with no origin
       // (like mobile apps or curl requests)
+      console.log("CORS ERROR");
       if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         var msg =
@@ -65,18 +68,29 @@ app.use(express.json());
 connectMongoose();
 
 app.use("/api/v1", mainRouter);
-// app.post("/recieve", async (req, res) => {
-//   const botReply = await getMesssage(req.body.message);
-//   console.log("botReply", botReply);
-//   res.json({ botReply });
-// });
 
 io.on("connection", (socket) => {
-  socket.on("new-message", async (message) => {
+  socket.on("new-message", async ({ message, userId }) => {
     // console.log("New Message", message);
     // console.log("ID", socket.id);
-    console.log("Message", message.message);
-    const botReply = await getMesssage(message.message);
+    console.log("Message", message);
+    const user = await User.findById(userId);
+    let chats = user.chats;
+    let newChat = new Chat({
+      text: message,
+      userType: "user",
+    });
+    newChat = await newChat.save();
+    console.log("Id ---->", newChat._id);
+    chats.push(newChat._id);
+    const botReply = await getMesssage(message);
+    let newBotChat = new Chat({
+      text: botReply.message.content,
+      userType: "system",
+    });
+    newBotChat = await newBotChat.save();
+    chats.push(newBotChat._id);
+    await User.findByIdAndUpdate(userId, { chats });
     console.log("botReply", botReply.message.content);
     socket.emit("bot-reply", `${botReply.message.content}`);
   });

@@ -1,7 +1,7 @@
 const express = require("express");
-const authControllers = require("../controllers/authControllers");
+const messageControllers = require("../controllers/messageControllers");
 const router = express.Router();
 
-router.use("/signup", authControllers.signup);
+router.get("/get-old-chats/:userid", messageControllers.getOldChats);
 
 module.exports = router;
