@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:8000/api/v1";
+const BASE_URL =
+  "https://good-space-d4kqt40vi-sourav-roys-projects.vercel.app/api/v1";
 import { io } from "socket.io-client";
 const socket = io("http://localhost:8000");
 
