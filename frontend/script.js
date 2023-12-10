@@ -69,6 +69,16 @@ const handleNavbarButtonClick = (buttonName) => {
   }
 };
 
+navbarLogoutBtn.addEventListener("click", () =>
+  handleNavbarButtonClick("logout")
+);
+navbarLoginBtn.addEventListener("click", () =>
+  handleNavbarButtonClick("login")
+);
+navbarSignupBtn.addEventListener("click", () =>
+  handleNavbarButtonClick("signup")
+);
+
 function storeDataToLocalStorage(name, value) {
   if (name && value) {
     localStorage.setItem(name, value);
@@ -136,7 +146,37 @@ signupBtn.addEventListener("click", async () => {
   }
 });
 
+const addNewChat = (msgType = "CLIENT", msg) => {
+  let newContent = document.createElement("div");
+  newContent.className =
+    msgType === "CLIENT" ? "client-msg-container" : "bot-msg-container";
+  newContent.innerHTML = `<p class="${
+    msgType === "CLIENT" ? "client-msg" : "bot-msg"
+  }">${msg}</p>`;
+  chatContainer.appendChild(newContent);
+  chatContainer.scroll(0, chatContainer.scrollHeight);
+};
+
+const handleMsgSubmit = () => {
+  let value = chatInput.value;
+  if (!value?.trim()) {
+    showNotification(3000, "Please fill all the fields", "DANGER");
+    return;
+  }
+  addNewChat("CLIENT", value);
+  chatInput.value = "";
+  sendBtn.style.color = "gray";
+  sendBtn.style.cursor = "not-allowed";
+  socket.emit("new-message", {
+    message: value,
+  });
+};
+
 chatInput.addEventListener("keyup", async (event) => {
+  if (event.key === "Enter") {
+    handleMsgSubmit();
+    return;
+  }
   let value = event.target.value;
   if (!value?.trim()) {
     sendBtn.style.color = "gray";
@@ -168,22 +208,8 @@ function showNotification(
   }, timeout);
 }
 
-sendBtn.addEventListener("click", () => {
-  let value = chatInput.value;
-  if (!value?.trim()) {
-    showNotification(3000, "Please fill all the fields", "DANGER");
-    return;
-  }
-  let newContent = document.createElement("div");
-  newContent.className = "client-msg-container";
-  newContent.innerHTML = `<p class="client-msg">${value}</p>`;
-  chatInput.value = "";
-  sendBtn.style.color = "gray";
-  sendBtn.style.cursor = "not-allowed";
-  socket.emit("new-message", {
-    message: value,
-  });
-  chatContainer.appendChild(newContent);
-});
+sendBtn.addEventListener("click", handleMsgSubmit);
 
-// const handleSubmit = () => {};
+socket.on("bot-reply", (message) => {
+  addNewChat("BOT", message);
+});
