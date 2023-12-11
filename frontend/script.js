@@ -1,5 +1,6 @@
-const BASE_URL = "https://goodspace-assignment.onrender.com/api/v1";
 import { io } from "socket.io-client";
+
+const BASE_URL = "https://goodspace-assignment.onrender.com/api/v1";
 const socket = io("https://goodspace-assignment.onrender.com");
 
 const notificationtype = {
@@ -22,13 +23,20 @@ const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("msg-send-btn");
 const noChat = document.getElementById("no-chat");
 const userName = document.getElementById("user-name");
+const signupNameField = document.getElementById("signup-name");
+const signupEmailField = document.getElementById("signup-email");
+const signupPasswordField = document.getElementById("signup-password");
+const loginEmailField = document.getElementById("login-email");
+const loginPasswordField = document.getElementById("login-password");
 
 // call on first time load
 onLoad();
 
+// window.addEventListener("load", startLoading);
+
 async function onLoad() {
+  startLoading();
   let token = await localStorage.getItem("token");
-  await loadOldChats();
   if (token) {
     loginPage.style.display = "none";
     signupPage.style.display = "none";
@@ -39,6 +47,7 @@ async function onLoad() {
     const userData = JSON.parse(localStorage.getItem("user")).name;
     userName.innerText = `Hi, ${userData}`;
     userName.style.display = "inline-block";
+    await loadOldChats();
   } else {
     loginPage.style.display = "block";
     signupPage.style.display = "none";
@@ -48,6 +57,24 @@ async function onLoad() {
     navbarSignupBtn.style.display = "block";
     userName.style.display = "none";
   }
+  endLoading();
+}
+
+function startLoading() {
+  const spinner = document.querySelector(".loader");
+  spinner.classList.remove("loader-hidden");
+  // spinner.addEventListener("transitionend", () => {
+  //   document.body.removeChild(spinner);
+  // });
+}
+
+function endLoading() {
+  const spinner = document.querySelector(".loader");
+  spinner.classList.add("loader-hidden");
+  // document.body.removeChild(spinner);
+  // spinner.addEventListener("transitionend", () => {
+  //   document.body.removeChild(spinner);
+  // });
 }
 
 async function loadOldChats() {
@@ -59,7 +86,6 @@ async function loadOldChats() {
     } else {
       noChat.style.display = "none";
       for (let chat of chats.data.chats) {
-        console.log("Chat", chat);
         const msgType = chat.userType === "user" ? "CLIENT" : "BOT";
         addNewChat(msgType, chat.text);
       }
@@ -83,16 +109,10 @@ const handleNavbarButtonClick = async (buttonName) => {
     signupPage.style.display = "block";
     loginPage.style.display = "none";
     chatPage.style.display = "none";
-    // navbarLogoutBtn.style.display = "block";
-    // navbarLoginBtn.style.display = "none";
-    // navbarSignupBtn.style.display = "none";
   } else if (buttonName === "login") {
     loginPage.style.display = "block";
     signupPage.style.display = "none";
     chatPage.style.display = "none";
-    // navbarLogoutBtn.style.display = "block";
-    // navbarLoginBtn.style.display = "none";
-    // navbarSignupBtn.style.display = "none";
   }
 };
 
@@ -114,8 +134,9 @@ function storeDataToLocalStorage(name, value) {
 
 // handle login
 loginBtn.addEventListener("click", async () => {
-  const email = document.getElementById("login-email").value;
-  const password = document.getElementById("login-password").value;
+  startLoading();
+  const email = loginEmailField.value;
+  const password = loginPasswordField.value;
   if (!email?.trim() || !password?.trim()) {
     showNotification(3000, "Please fill all the fields", "DANGER");
     return;
@@ -136,19 +157,22 @@ loginBtn.addEventListener("click", async () => {
     navbarLogoutBtn.style.display = "block";
     navbarLoginBtn.style.display = "none";
     navbarSignupBtn.style.display = "none";
+    loginEmailField.value = "";
+    loginPasswordField.value = "";
     await loadOldChats();
     showNotification(3000, "successfully loggedin", "SUCCESS");
   } catch (error) {
     showNotification(3000, error.message, "DANGER");
-    return;
   }
+  endLoading();
 });
 
 // handle login
 signupBtn.addEventListener("click", async () => {
-  const name = document.getElementById("signup-name").value;
-  const email = document.getElementById("signup-email").value;
-  const password = document.getElementById("signup-password").value;
+  startLoading();
+  const name = signupNameField.value;
+  const email = signupEmailField.value;
+  const password = signupPasswordField.value;
   if (!name?.trim() || !email?.trim() || !password?.trim()) {
     showNotification(3000, "Please fill all the fields", "DANGER");
     return;
@@ -164,19 +188,21 @@ signupBtn.addEventListener("click", async () => {
     userName.style.display = "inline-block";
     storeDataToLocalStorage("token", res.data.token);
     storeDataToLocalStorage("user", JSON.stringify(res.data.user));
-    console.log("RESPONSE", res.data);
     loginPage.style.display = "none";
     signupPage.style.display = "none";
     chatPage.style.display = "block";
     navbarLogoutBtn.style.display = "block";
     navbarLoginBtn.style.display = "none";
     navbarSignupBtn.style.display = "none";
-    await loadOldChats();
+    signupNameField.value = "";
+    signupEmailField.value = "";
+    signupPasswordField.value = "";
+    // await loadOldChats();
     showNotification(3000, "successfully signed up", "SUCCESS");
   } catch (error) {
     showNotification(3000, "Please fill all the fields", "DANGER");
-    return;
   }
+  endLoading();
 });
 
 function addNewChat(msgType = "CLIENT", msg) {
@@ -232,7 +258,6 @@ function showNotification(
   message = "This is a sample message",
   type = "SUCCESS"
 ) {
-  // showNotification = false;
   let notificationBar = document.getElementById("snackbar");
   notificationBar.textContent = message;
   // Add the "show" class to DIV
@@ -242,7 +267,6 @@ function showNotification(
 
   // After 3 seconds, remove the show class from DIV
   setTimeout(function () {
-    //   showNotification = false;
     notificationBar.className = notificationBar.className.replace("show", "");
   }, timeout);
 }
