@@ -51,16 +51,18 @@ async function onLoad() {
 }
 
 async function loadOldChats() {
-  let userid = JSON.parse(localStorage.getItem("user")).id;
-  const chats = await axios.get(`${BASE_URL}/chats/get-old-chats/${userid}`);
-  if (!chats.data.chats.length) {
-    noChat.style.display = "flex";
-  } else {
-    noChat.style.display = "none";
-    for (let chat of chats.data.chats) {
-      console.log("Chat", chat);
-      const msgType = chat.userType === "user" ? "CLIENT" : "BOT";
-      addNewChat(msgType, chat.text);
+  let userid = JSON.parse(localStorage.getItem("user"))?.id;
+  if (userid) {
+    const chats = await axios.get(`${BASE_URL}/chats/get-old-chats/${userid}`);
+    if (!chats.data.chats.length) {
+      noChat.style.display = "flex";
+    } else {
+      noChat.style.display = "none";
+      for (let chat of chats.data.chats) {
+        console.log("Chat", chat);
+        const msgType = chat.userType === "user" ? "CLIENT" : "BOT";
+        addNewChat(msgType, chat.text);
+      }
     }
   }
 }
