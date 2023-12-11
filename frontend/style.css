@@ -238,13 +238,12 @@ button {
   color: #000;
   font-size: 16px;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 18px 18px 0 18px;
   max-width: 65%;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .client-msg {
-  /* height: 35px; */
   background-color: navy;
   color: white;
   font-size: 15px;
@@ -255,30 +254,6 @@ button {
   flex-wrap: wrap;
   word-break: break-all;
 }
-
-/* .bot-msg {
-  height: 35px;
-  background-color: white;
-  color: #000;
-  font-size: 16px;
-  justify-content: flex-start;
-  width: max-content;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.client-msg {
-  height: 35px;
-  background-color: navy;
-  color: white;
-  font-size: 15px;
-  /* text-align: right; */
-/* padding: 10px;
-  justify-content: flex-end; */
-/* float: right; */
-/* width: 46%; */
-/* border-radius: 10px; */
-/* }  */
 
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {

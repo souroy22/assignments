@@ -1,6 +1,6 @@
 const BASE_URL = "https://goodspace-assignment.onrender.com/api/v1";
 import { io } from "socket.io-client";
-const socket = io("http://localhost:8000");
+const socket = io("https://goodspace-assignment.onrender.com");
 
 const notificationtype = {
   SUCCESS: { bgColor: "#007E33", color: "white" },
